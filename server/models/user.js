@@ -85,7 +85,10 @@ const UserSchema = new mongoose.Schema({
 // Sovrascrive la funzione toJSON ed elimina il campo "password" dalla risposta JSON
 UserSchema.methods.toJSON = function () {
   const user = this
-  return _.pick(user.toObject(), ['_id', 'firstname', 'lastname', 'email', 'birthday', 'telephone', 'gender', 'address', 'employee', 'tickets', 'wallet'])
+  return _.pick(user.toObject(), ['_id', 'firstname', 'lastname', 
+                                  'email', 'birthday', 
+                                  'telephone', 'gender', 'address', 
+                                  'employee', 'tickets', 'wallet'])
 }
 
 // Genera un token per un determinato utente
@@ -94,8 +97,8 @@ UserSchema.methods.generateAuthToken = async function () {
   const access = 'auth'
   return jwt.sign({
     _id: user._id.toHexString(), // Inseriamo nella sezione dati l'ID dell'utente
-    access
-  }, process.env.JWT_SECRET || 'jwtSecret', { expiresIn: '1d' }).toString() // Impostiamo una chiave segreta e la scadenza del token
+    access                    // Impostiamo una chiave segreta e la scadenza del token
+  }, process.env.JWT_SECRET || 'jwtSecret', { expiresIn: '1d' }).toString()
 }
 
 UserSchema.methods.buyTicket = async function ({ title, price }) {
@@ -125,9 +128,12 @@ UserSchema.pre('save', async function (next) {
   }
 
   try {
-    const salt = await bcrypt.genSalt(10) // Genera un salt randomico da aggiungere alla password in chiaro.
-    const hash = await bcrypt.hash(user.password, salt) // Genera un hash della password e del salt. Grazie al salta l'hash sarà sempre diverso.
-    user.password = hash // Sostituisci la password in chiaro con l'hash generato.
+    // Genera un salt randomico da aggiungere alla password in chiaro.
+    const salt = await bcrypt.genSalt(10)
+    // Genera un hash della password e del salt. Grazie al salta l'hash sarà sempre diverso.
+    const hash = await bcrypt.hash(user.password, salt) 
+    // Sostituisci la password in chiaro con l'hash generato.
+    user.password = hash 
     next()
   } catch (e) {
     throw new Error('Impossibile criptare la password.')
