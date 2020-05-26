@@ -3,7 +3,9 @@ const _ = require('lodash')
 const User = require('../models/user')
 
 const signup = async (req, res) => {
-  const body = _.pick(req.body, ['firstname', 'lastname', 'email', 'password', 'password_confirm', 'address', 'birthday', 'gender', 'telephone', 'empoyee'])
+  const body = _.pick(req.body, ['firstname', 'lastname', 'email', 
+                                 'password', 'password_confirm', 'address', 
+                                 'birthday', 'gender', 'telephone', 'empoyee'])
 
   // Controllare che la password corrisponda a password_confirm
   if (body.password !== body.password_confirm) {
