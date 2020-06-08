@@ -2,15 +2,13 @@ const express = require('express')
 const router = express.Router()
 
 const {
-  getTickets,
-  buyTickets
-} = require('../../../controllers/tickets')
+  validatePurchase
+} = require('../../../controllers/purchases')
 
 const {
   authenticate
 } = require('../../../middlewares/authenticate')
 
-router.get('/', getTickets)
-router.post('/buy/', authenticate, buyTickets)
+router.post('/:id/validate/', authenticate, validatePurchase)
 
 module.exports = router

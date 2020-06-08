@@ -10,12 +10,25 @@ const TicketSchema = new mongoose.Schema({
     required: true
   },
   price: {
-    type: String,
+    value: {
+      type: Number,
+      required: true,
+      default: 0
+    },
+    currency: {
+      type: String,
+      required: true,
+      default: 'EUR'
+    }
+  },
+  validity: {
+    type: Number,
     required: true
   },
   img: {
     type: String,
-    required: true
+    required: true,
+    trim: true
   }
 })
 

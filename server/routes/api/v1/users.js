@@ -3,7 +3,9 @@ const router = express.Router()
 
 const {
   getUser,
-  getTickets,
+  getPurchases,
+  getValidPurchases,
+  getInvalidPurchases,
   getWallet
 } = require('../../../controllers/users')
 
@@ -14,8 +16,10 @@ const {
 /* Si interpone il middleware che autentica le richieste. Nel caso l'utente non sia autenticato,
 la route non prosegue invocando getUser ma risponde con un errore al client.
 */
-router.get('/:id', authenticate, getUser) // GET /api/v1/users/:id
-router.get('/:id/tickets', authenticate, getTickets) // GET /api/v1/users/:id
-router.get('/:id/wallet', authenticate, getWallet) // GET /api/v1/users/:id
+router.get('/:id', authenticate, getUser)
+router.get('/:id/purchases', authenticate, getPurchases)
+router.get('/:id/wallet', authenticate, getWallet)
+router.get('/:id/purchases/valid', authenticate, getValidPurchases)
+router.get('/:id/purchases/invalid', authenticate, getInvalidPurchases)
 
 module.exports = router

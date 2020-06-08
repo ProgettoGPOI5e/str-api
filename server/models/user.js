@@ -58,16 +58,10 @@ const UserSchema = new mongoose.Schema({
     required: true
   },
   address: AddressSchema,
-  empoyee: {
-    type: String
+  employee: {
+    type: String,
+    unique: true
   },
-  tickets: [{
-    title: {
-      type: ObjectId,
-      ref: 'Ticket'
-    },
-    date: String
-  }],
   wallet: {
     balance: {
       type: Number,
@@ -79,16 +73,21 @@ const UserSchema = new mongoose.Schema({
       required: true,
       default: 'EUR'
     }
+  },
+  legals: {
+    type: Boolean,
+    required: true
+  },
+  newsletter: {
+    type: Boolean,
+    required: true
   }
 })
 
 // Sovrascrive la funzione toJSON ed elimina il campo "password" dalla risposta JSON
 UserSchema.methods.toJSON = function () {
   const user = this
-  return _.pick(user.toObject(), ['_id', 'firstname', 'lastname', 
-                                  'email', 'birthday', 
-                                  'telephone', 'gender', 'address', 
-                                  'employee', 'tickets', 'wallet'])
+  return _.pick(user.toObject(), ['_id', 'firstname', 'lastname', 'email', 'birthday', 'telephone', 'gender', 'address', 'employee', 'tickets', 'wallet', 'legals', 'newsletter'])
 }
 
 // Genera un token per un determinato utente
@@ -97,22 +96,16 @@ UserSchema.methods.generateAuthToken = async function () {
   const access = 'auth'
   return jwt.sign({
     _id: user._id.toHexString(), // Inseriamo nella sezione dati l'ID dell'utente
-    access                    // Impostiamo una chiave segreta e la scadenza del token
-  }, process.env.JWT_SECRET || 'jwtSecret', { expiresIn: '1d' }).toString()
+    access
+  }, process.env.JWT_SECRET || 'jwtSecret', { expiresIn: '1d' }).toString() // Impostiamo una chiave segreta e la scadenza del token
 }
 
-UserSchema.methods.buyTicket = async function ({ title, price }) {
+UserSchema.methods.buyTicket = async function (price) {
   const user = this
 
-  const ticket = {
-    title
-  }
-
   const balance = user.get('wallet.balance')
-  await user.tickets.push(ticket)
   await user.set('wallet.balance', balance - price)
   await user.save()
-  return ticket
 }
 
 /* Middleware che precede save e cripta la password quando viene creato un utente
@@ -128,12 +121,9 @@ UserSchema.pre('save', async function (next) {
   }
 
   try {
-    // Genera un salt randomico da aggiungere alla password in chiaro.
-    const salt = await bcrypt.genSalt(10)
-    // Genera un hash della password e del salt. Grazie al salta l'hash sarà sempre diverso.
-    const hash = await bcrypt.hash(user.password, salt) 
-    // Sostituisci la password in chiaro con l'hash generato.
-    user.password = hash 
+    const salt = await bcrypt.genSalt(10) // Genera un salt randomico da aggiungere alla password in chiaro.
+    const hash = await bcrypt.hash(user.password, salt) // Genera un hash della password e del salt. Grazie al salta l'hash sarà sempre diverso.
+    user.password = hash // Sostituisci la password in chiaro con l'hash generato.
     next()
   } catch (e) {
     throw new Error('Impossibile criptare la password.')

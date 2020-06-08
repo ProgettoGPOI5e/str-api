@@ -3,6 +3,27 @@ const News = require('../models/news')
 const getNews = async (req, res) => {
   try {
     const news = await News.find()
+      .sort({
+        _id: -1
+      })
+      .populate({
+        path: 'author'
+      })
+    res.status(200).json(news)
+  } catch (e) {
+    res.status(500).json({
+      message: 'Impossibile recuperare le notizie.'
+    })
+  }
+}
+
+const getLastNews = async (req, res) => {
+  try {
+    const news = await News.find()
+      .sort({
+        _id: -1
+      })
+      .limit(1)
       .populate({
         path: 'author'
       })
@@ -34,5 +55,6 @@ const addNews = async ({ body: { title, body }, user: { _id } }, res) => {
 
 module.exports = {
   getNews,
+  getLastNews,
   addNews
 }

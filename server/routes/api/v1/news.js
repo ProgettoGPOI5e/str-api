@@ -3,7 +3,8 @@ const router = express.Router()
 
 const {
   getNews,
-  addNews
+  addNews,
+  getLastNews
 } = require('../../../controllers/news')
 
 const {
@@ -16,5 +17,6 @@ const {
 
 router.get('/', authenticate, admin, getNews)
 router.post('/', authenticate, admin, addNews)
+router.get('/last', authenticate, getLastNews)
 
 module.exports = router
