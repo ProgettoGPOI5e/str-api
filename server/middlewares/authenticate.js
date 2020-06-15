@@ -1,3 +1,7 @@
+//authenticate.js - Questo middleware serve per autenticare le richieste al backend
+//                  Ovvero avere la sicurezza che è il client che esegue la richiesta
+//                  e non un utente malevolo.
+
 const passport = require('passport')
 
 // Config
